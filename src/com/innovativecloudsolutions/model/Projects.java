@@ -12,6 +12,10 @@ import java.util.List;
 public class Projects {
    private List<Project> jobs;
 
+    /**
+     * 
+     * @return
+     */
     public List<Project> getJobs() {
         return jobs;
     }
