@@ -29,6 +29,9 @@ public class ProjectListActivity extends ListActivity {
 
 
     ArrayList<Project> Projects = null;
+    private static final String HUDSON_JOB_URL = "http://10.0.2.2:8080/hudson/job/";
+    private static final String HUDSON_BUILD_CMD = "/build";
+    private static final String HUDSON_BUILD_CMD_DELAY = "?delay=";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -45,16 +48,14 @@ public class ProjectListActivity extends ListActivity {
 
     public void onListItemClick(ListView parent, View v, int position,
                                 long id) {
-        Project selectedContract = projectList.getJobs().get(position);
-        Log.d("Selected : ", selectedContract.toString());
+        Project selectedProject = projectList.getJobs().get(position);
+        Log.d("Selected : ", selectedProject.toString());
+        Util.invokeWebService(HUDSON_JOB_URL + selectedProject.getName() +HUDSON_BUILD_CMD);
 
-        /*Intent contractDetailsIntent = new Intent(this, ContractDetailActivity.class);
-        contractDetailsIntent.putExtra("contractNumber", selectedContract.getPolicyId());
-        contractDetailsIntent.putExtra("contractName", selectedContract.getOwnerName());
-        contractDetailsIntent.putExtra("lob", selectedContract.getLineOfBusiness());*/
+        /*Intent contractDetailsIntent = new Intent(this, ProjectDetailActivity.class);
+        contractDetailsIntent.putExtra("projectName", selectedProject.getName());
 
-        //startActivity(contractDetailsIntent);
-
+        startActivity(contractDetailsIntent);*/
     }
 
     private void getProjects() {
