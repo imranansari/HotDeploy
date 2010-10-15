@@ -9,27 +9,22 @@ import android.view.View;
 import android.widget.ListView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.innovativecloudsolutions.adapters.ProjectsAdapter;
-import com.innovativecloudsolutions.model.Project;
-import com.innovativecloudsolutions.model.Projects;
+import com.innovativecloudsolutions.adapters.BuildRequestsAdapter;
+import com.innovativecloudsolutions.model.BuildRequest;
 import com.innovativecloudsolutions.utils.Util;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 
-public class ProjectListActivity extends ListActivity {
+public class BuildRequestListActivity extends ListActivity {
 
-    ProjectsAdapter projectsAdapter;
-    Projects projectList = null;
-    //String contractURI = "http://10.0.2.2:8888/test";
-    String contractURI = "http://10.0.2.2:8080/hudson/api/json?tree=jobs[name]";
-    //String contractURI = "http://build.lfg.com:8080/api/json?tree=jobs[name]";
+    BuildRequestsAdapter buildRequestsAdapter;
+    List buildRequestsList = null;
+    String buildRequestURI = "http://connecteddeploy.appspot.com/buildrequest";
 
-
-    ArrayList<Project> Projects = null;
+    ArrayList<BuildRequest> buildRequests = null;
     private static final String HUDSON_JOB_URL = "http://10.0.2.2:8080/hudson/job/";
     private static final String HUDSON_BUILD_CMD = "/build";
     private static final String HUDSON_BUILD_CMD_DELAY = "?delay=";
@@ -39,19 +34,19 @@ public class ProjectListActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.projects);
 
-        Projects = new ArrayList<Project>();
-        projectsAdapter = new ProjectsAdapter(ProjectListActivity.this, R.layout.projects_list, Projects);
-        setListAdapter(projectsAdapter);
+        buildRequests = new ArrayList<BuildRequest>();
+        buildRequestsAdapter = new BuildRequestsAdapter(BuildRequestListActivity.this, R.layout.buildrequest_list, buildRequests);
+        setListAdapter(buildRequestsAdapter);
 
         getProjects();
-        projectsAdapter.notifyDataSetChanged();
+        buildRequestsAdapter.notifyDataSetChanged();
     }
 
     public void onListItemClick(ListView parent, View v, int position,
                                 long id) {
-        Project selectedProject = projectList.getJobs().get(position);
+        BuildRequest selectedProject = (BuildRequest) buildRequestsList.get(position);
         Log.d("Selected : ", selectedProject.toString());
-        Util.invokeWebService(HUDSON_JOB_URL + selectedProject.getName() +HUDSON_BUILD_CMD);
+        Util.invokeWebService(HUDSON_JOB_URL + selectedProject.getProjectName() + HUDSON_BUILD_CMD);
 
         /*Intent contractDetailsIntent = new Intent(this, ProjectDetailActivity.class);
         contractDetailsIntent.putExtra("projectName", selectedProject.getName());
@@ -60,28 +55,26 @@ public class ProjectListActivity extends ListActivity {
     }
 
     private void getProjects() {
-        String response = Util.invokeWebService(contractURI);
-        JSONObject json = null;
-        try {
-            json = new JSONObject(response);
-            String result = json.getString("responseDetails");
-        } catch (JSONException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        String response = Util.invokeWebService(buildRequestURI);
 
         //System.out.println("responseDetails = " + json.toString());
 
         Log.d("response :", response);
-        Type type = new TypeToken<Projects>() {
+        Type type = new TypeToken<List<BuildRequest>>() {
         }.getType();
-        projectList = new Gson().fromJson(response, type);
+        buildRequestsList = new Gson().fromJson(response, type);
 
         Log.d("response :", response);
-        Log.d("json :", String.valueOf(projectList.getJobs().size()));
+        Log.d("json :", String.valueOf(buildRequestsList.size()));
 
-        for (Project contract : projectList.getJobs()) {
-            Projects.add(contract);
+        for (int i = 0; i < buildRequestsList.size(); i++) {
+            buildRequests.add((BuildRequest) buildRequestsList.get(i));
+
         }
+
+  /*      for (BuildRequest buildRequest : buildRequestsList.getBuildRequests()) {
+            buildRequests.add(buildRequest);
+        }*/
     }
 
 
