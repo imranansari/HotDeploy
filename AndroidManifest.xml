@@ -2,13 +2,57 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.innovativecloudsolutions">
     <uses-permission android:name="android.permission.INTERNET"/>
-    <application android:icon="@drawable/icon" android:label="ConnectedDeploy">
+    
+<!-- Only this application can receive the messages and registration result -->
+    <permission android:name="com.google.android.apps.chrometophone.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+    <uses-permission android:name="com.google.android.apps.chrometophone.permission.C2D_MESSAGE" />
+
+    <!-- This app has permission to register and receive data message -->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <!-- Permissions for internet access and account access -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- App must have this permission to use the library -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+
+
+    <application android:icon="@drawable/workflow" android:label="ConnectedDeploy" android:theme="@android:style/Theme.Light">
+
         <activity android:name=".BuildRequestListActivity">
+
+        </activity>
+
+        <activity android:name=".ProjectListActivity">
+
+        </activity>
+
+        <activity android:name=".ConnectedDeployActivity" android:label="Connected Deploy">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        
+
+
+        <service android:name=".C2DMReceiver" />
+
+
+        <receiver android:name="com.innovativecloudsolutions.c2dm.C2DMBroadcastReceiver"
+                  android:permission="com.google.android.c2dm.permission.SEND">
+            <!-- Receive the actual message -->
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.innovativecloudsolutions" />
+            </intent-filter>
+            <!-- Receive the registration id -->
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+                <category android:name="com.innovativecloudsolutions" />
+            </intent-filter>
+        </receiver>
+
     </application>
 </manifest>

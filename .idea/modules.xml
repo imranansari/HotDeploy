@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ConnectedDeploy.iml" filepath="$PROJECT_DIR$/ConnectedDeploy.iml" />
+      <module fileurl="file://$PROJECT_DIR$/TestAndroid/TestAndroid.iml" filepath="$PROJECT_DIR$/TestAndroid/TestAndroid.iml" />
     </modules>
   </component>
 </project>

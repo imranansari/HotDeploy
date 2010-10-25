@@ -34,6 +34,8 @@ public class BuildRequestsAdapter extends ArrayAdapter<BuildRequest> {
     public View getView(int position, View convertView, ViewGroup parent) {
         LinearLayout buildRequestView;
         BuildRequest buildRequest = getItem(position);
+        String requestDate = buildRequest.getDate();
+        requestDate = requestDate.substring(0, requestDate.indexOf("UTC"));
 
         if (convertView == null) {
             buildRequestView = new LinearLayout(getContext());
@@ -44,9 +46,11 @@ public class BuildRequestsAdapter extends ArrayAdapter<BuildRequest> {
             buildRequestView = (LinearLayout) convertView;
         }
 
-        TextView buildRequestProjectName = (TextView) buildRequestView.findViewById(R.id.projectName);
 
-        buildRequestProjectName.setText(buildRequest.getProjectName());
+        ((TextView) (buildRequestView.findViewById(R.id.projectName))).setText(buildRequest.getProjectName());
+        ((TextView) (buildRequestView.findViewById(R.id.requestDate))).setText(requestDate);
+        //((TextView) (buildRequestView.findViewById(R.id.projectName))).setText(buildRequest.getProjectName());
+
         return buildRequestView;
     }
 

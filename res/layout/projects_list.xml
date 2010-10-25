@@ -5,14 +5,27 @@
             android:orientation="vertical"
             android:layout_width="0dip" android:layout_weight="1"
             android:layout_height="fill_parent">
-        <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/projectUrl"
-                android:textStyle="bold"/>
-        <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/projectName"/>
+
+
+        <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                     android:layout_width="fill_parent"
+                     android:layout_height="fill_parent"
+                     android:stretchColumns="1" android:background="#DDDDDD">
+
+            <TableRow android:background="#FFFFFF" android:layout_margin="1dip">
+                <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left"
+                        android:src="@drawable/blue"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left"
+                        android:id="@+id/projectName"/>
+            </TableRow>
+
+        </TableLayout>
+
     </LinearLayout>
 </LinearLayout>

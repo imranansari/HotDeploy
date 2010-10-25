@@ -9,6 +9,8 @@ package com.innovativecloudsolutions.model;
  */
 public class BuildRequest {
     private String projectName;
+    private String date;
+    private String requestedBy;
 
 
     public BuildRequest() {
@@ -20,6 +22,22 @@ public class BuildRequest {
 
     public void setProjectName(final String projectName) {
         this.projectName = projectName;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(final String date) {
+        this.date = date;
+    }
+
+    public String getRequestedBy() {
+        return requestedBy;
+    }
+
+    public void setRequestedBy(final String requestedBy) {
+        this.requestedBy = requestedBy;
     }
 
     @Override

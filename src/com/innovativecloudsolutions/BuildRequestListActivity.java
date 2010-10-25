@@ -1,12 +1,18 @@
 package com.innovativecloudsolutions;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.innovativecloudsolutions.adapters.BuildRequestsAdapter;
@@ -25,12 +31,23 @@ public class BuildRequestListActivity extends ListActivity {
     String buildRequestURI = "http://connecteddeploy.appspot.com/buildrequest";
 
     ArrayList<BuildRequest> buildRequests = null;
-    private static final String HUDSON_JOB_URL = "http://10.0.2.2:8080/hudson/job/";
+    private static final String HUDSON_JOB_URL = ServiceConstants.HUDSON_BASE_URL + "/job/";
+    //private static final String HUDSON_JOB_URL = "http://http403.local:8080/hudson/job/";
     private static final String HUDSON_BUILD_CMD = "/build";
     private static final String HUDSON_BUILD_CMD_DELAY = "?delay=";
 
+
+    public static final String EXTRA_SENDER = "sender";
+    public static final String EXTRA_APPLICATION_PENDING_INTENT = "app";
+    public static final String REQUEST_UNREGISTRATION_INTENT = "com.google.android.c2dm.intent.UNREGISTER";
+    public static final String REQUEST_REGISTRATION_INTENT = "com.google.android.c2dm.intent.REGISTER";
+    public static final String LAST_REGISTRATION_CHANGE = "last_registration_change";
+    public static final String BACKOFF = "backoff";
+    public static final String GSF_PACKAGE = "com.innovativecloudsolutions";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.projects);
 
@@ -40,13 +57,45 @@ public class BuildRequestListActivity extends ListActivity {
 
         getProjects();
         buildRequestsAdapter.notifyDataSetChanged();
+
+        //registerC2DM();
+    }
+
+    private void registerC2DM() {
+
+        Intent registrationIntent = new Intent(REQUEST_REGISTRATION_INTENT);
+        registrationIntent.setPackage(GSF_PACKAGE);
+        registrationIntent.putExtra(EXTRA_APPLICATION_PENDING_INTENT,
+                PendingIntent.getBroadcast(this, 0, new Intent(), 0));
+        registrationIntent.putExtra(EXTRA_SENDER, "imran.iansari@gmail.com");
+
+        startService(registrationIntent);
+
     }
 
     public void onListItemClick(ListView parent, View v, int position,
                                 long id) {
-        BuildRequest selectedProject = (BuildRequest) buildRequestsList.get(position);
+        final BuildRequest selectedProject = (BuildRequest) buildRequestsList.get(position);
         Log.d("Selected : ", selectedProject.toString());
-        Util.invokeWebService(HUDSON_JOB_URL + selectedProject.getProjectName() + HUDSON_BUILD_CMD);
+        final String buildMessage = "Building approved for " + selectedProject.getProjectName();
+
+        final CharSequence[] items = {"Approve", "Reject", "Schedule"};
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Build " + selectedProject.getProjectName());
+        builder.setItems(items, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                if (item == 0) {
+                    Util.invokeWebService(HUDSON_JOB_URL + selectedProject.getProjectName() + HUDSON_BUILD_CMD);
+                    Toast.makeText(getApplicationContext(), buildMessage, Toast.LENGTH_SHORT).show();
+                }
+
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+
+        //Util.invokeWebService(HUDSON_JOB_URL + selectedProject.getProjectName() + HUDSON_BUILD_CMD);
 
         /*Intent contractDetailsIntent = new Intent(this, ProjectDetailActivity.class);
         contractDetailsIntent.putExtra("projectName", selectedProject.getName());
@@ -72,7 +121,7 @@ public class BuildRequestListActivity extends ListActivity {
 
         }
 
-  /*      for (BuildRequest buildRequest : buildRequestsList.getBuildRequests()) {
+        /*      for (BuildRequest buildRequest : buildRequestsList.getBuildRequests()) {
             buildRequests.add(buildRequest);
         }*/
     }
@@ -83,10 +132,18 @@ public class BuildRequestListActivity extends ListActivity {
         super.onPrepareOptionsMenu(menu);
         MenuItem item;
         menu.removeItem(0);
-        menu.removeItem(1);
+        final Intent intent = new Intent(this, ConnectedDeployActivity.class);
 
-        item = menu.add(0, 0, 0, "Search Project");
-        item = menu.add(0, 1, 0, "Dashboard");
+        item = menu.add(0, 0, 0, "Reload");
+
+        item.setOnMenuItemClickListener(new
+                MenuItem.OnMenuItemClickListener() {
+                    public boolean onMenuItemClick(MenuItem item) {
+                      startActivity(intent);
+
+                        return true;
+                    }
+                });
         return true;
     }
 
@@ -121,5 +178,25 @@ public class BuildRequestListActivity extends ListActivity {
 
         // Returning true indicates that we did launch the search, instead of blocking it.
         return true;
+    }
+
+    // Registration ID received via an Intent
+
+    public void onReceive(Context context, Intent intent) {
+        String action = intent.getAction();
+        if ("com.google.android.c2dm.intent.REGISTRATION".equals(action)) {
+            handleRegistration(context, intent);
+        }
+    }
+
+    public void handleRegistration(Context context, Intent intent) {
+        String id = intent.getExtras().getString("registration_id");
+        if ((intent.getExtras().getString("error") != null)) {
+            Log.d("C2DM", "Registration failed.  Try again later, with backoff.");
+        } else if (id != null) {
+            // Send the registration ID to the app’s server.
+            // Be sure to do this in a separate thread.
+            Log.d("C2DM reg id", id);
+        }
     }
 }

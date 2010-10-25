@@ -45,10 +45,10 @@ public class ProjectsAdapter extends ArrayAdapter<Project> {
         }
 
         TextView contractName = (TextView) projectView.findViewById(R.id.projectName);
-        TextView contractNumber = (TextView) projectView.findViewById(R.id.projectUrl);
+        //TextView contractNumber = (TextView) projectView.findViewById(R.id.projectUrl);
 
         contractName.setText(project.getName());
-        contractNumber.setText(project.getUrl());
+        //contractNumber.setText(project.getUrl());
 
         return projectView;
     }

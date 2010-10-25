@@ -13,8 +13,6 @@ import com.innovativecloudsolutions.adapters.ProjectsAdapter;
 import com.innovativecloudsolutions.model.Project;
 import com.innovativecloudsolutions.model.Projects;
 import com.innovativecloudsolutions.utils.Util;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -24,9 +22,10 @@ public class ProjectListActivity extends ListActivity {
 
     ProjectsAdapter projectsAdapter;
     Projects projectList = null;
-    //String contractURI = "http://10.0.2.2:8888/test";
-    String contractURI = "http://10.0.2.2:8080/hudson/api/json?tree=jobs[name]";
-    //String contractURI = "http://build.lfg.com:8080/api/json?tree=jobs[name]";
+    //String hudsonJsonQuery = "http://10.0.2.2:8888/test";
+    //String hudsonJsonQuery = "http://10.0.2.2:8080/hudson/api/json?tree=jobs[name]";
+    String hudsonJsonQuery = ServiceConstants.HUDSON_BASE_URL +"/api/json";
+    //String hudsonJsonQuery = "http://build.lfg.com:8080/api/json?tree=jobs[name]";
 
 
     ArrayList<Project> Projects = null;
@@ -60,16 +59,19 @@ public class ProjectListActivity extends ListActivity {
     }
 
     private void getProjects() {
-        String response = Util.invokeWebService(contractURI);
-        JSONObject json = null;
+        String response = Util.invokeWebService(hudsonJsonQuery);
+/*        JSONObject json = null;
         try {
             json = new JSONObject(response);
             String result = json.getString("responseDetails");
         } catch (JSONException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
+        }*/
 
         //System.out.println("responseDetails = " + json.toString());
+
+        response = response.substring(response.indexOf("\"jobs\":["), response.indexOf(",\"overallLoad"));
+        response = "{"+ response + "}";
 
         Log.d("response :", response);
         Type type = new TypeToken<Projects>() {
